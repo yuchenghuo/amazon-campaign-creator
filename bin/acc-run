@@ -1,6 +1,4 @@
 #!/bin/bash
-
-# Stop on errors
 set -Eeuo pipefail
 
 export FLASK_ENV=development

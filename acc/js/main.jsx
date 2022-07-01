@@ -1,8 +1,8 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from "react";
+import ReactDOM from "react-dom/client";
 import Index from './index';
 
-ReactDOM.render(
-  <Index />,
-  document.getElementById('reactEntry'),
+const root = ReactDOM.createRoot(document.getElementById("reactEntry"));
+root.render(
+  <Index />
 );

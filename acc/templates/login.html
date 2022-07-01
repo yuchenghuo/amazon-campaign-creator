@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Amazon Campaign Creator</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="shortcut icon" href="/static/favicon.ico">
+</head>
+<body>
+<div class="column-container" style="max-width: 610px; margin: auto;">
+    <!-- Header Section  -->
+    <div id="menu-bar"></div>
+    <div id="login" class="content">
+        <!-- DO NOT CHANGE THIS (aside from styling) -->
+        <form id="login-form" action="/accounts/" method="post" enctype="multipart/form-data">
+            <input style="width: 60%;" type="text" name="client_id" placeholder="client_id" required/>
+            <input style="width: 60%;" type="text" name="client_secret" placeholder="client_secret" required/>
+            <input style="width: 60%;" type="text" name="refresh_token" placeholder="refresh_token" required/>
+
+            <input id="login-button" style="width: 30%;" type="submit" value="login"/>
+            <input type="hidden" name="operation" value="login"/>
+        </form>
+        <p>Note: If you are not being redirected after entering your credentials
+            and clicking the log in button, it means we failed to fetch the access token.
+            Please check your credentials and try again.</p>
+    </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/bundle.js') }}"></script>
+</div>
+</body>
+</html>

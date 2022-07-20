@@ -39,8 +39,9 @@ def create_campaigns(profile_id, campaign_data):
             'state': campaign['state'],
             'dailyBudget': campaign['daily_budget'],
             'startDate': campaign['start_date'],
-            'endDate': campaign['end_date'],
         }
+        if 'end_date' in campaign:
+            data['endDate'] = campaign['end_date']
 
         if campaign['premium_adjustment']:
             data['premiumBidAdjustment'] = campaign['premium_adjustment']

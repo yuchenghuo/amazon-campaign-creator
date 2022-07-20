@@ -21,14 +21,14 @@ def single_keyword_campaign():
     campaign_end_date = json_data.get('campaign_end_date')
     if campaign_end_date:
         campaign_end_date = campaign_end_date.replace('-', '')
-    premium_bid_adjustment = json_data.get('premium_bid_adjustment')
+    enabled = json_data.get('enabled')
     bidding = json_data.get('bidding')
     keywords = json_data.get('keywords').split(',')
     acostarget = json_data.get('acostarget')
     predicate = bidding['adjustments'][0]['predicate']
-    default_bid = int(json_data.get('default_bid'))
-    max_bid = int(json_data.get('max_bid'))
-    bid_adjustment = int(json_data.get('bid_adjustment')) / 100
+    default_bid = float(json_data.get('default_bid'))
+    max_bid = float(json_data.get('max_bid'))
+    bid_adjustment = float(json_data.get('bid_adjustment')) / 100
     initial_keyword_bid = json_data.get('initial_keyword_bid')
 
     predicate_text = ''
@@ -46,10 +46,9 @@ def single_keyword_campaign():
             campaign_name=f'{campaign_name} - {keywords[i]}',
             targeting_type='manual',
             daily_budget=daily_budget,
-            state='paused',
+            state=enabled,
             start_date=campaign_start_date,
             end_date=campaign_end_date,
-            premium_bid_adjustment=premium_bid_adjustment,
             bidding=bidding,
         ) for i in range(n)
     ]
@@ -62,7 +61,7 @@ def single_keyword_campaign():
             campaign_id=campaigns[i],
             name=f'{campaign_name} {i + 1}/{n} ({keywords[i]})',
             default_bid=default_bid,
-            state='paused',
+            state=enabled,
         ) for i in range(n)
     ]
     ad_groups = create_ad_groups(profile_id, ad_group_data)
@@ -94,7 +93,7 @@ def single_keyword_campaign():
             ad_group_id=ad_groups[i],
             keyword_text=keywords[i],
             match_type='exact',
-            state='paused',
+            state=enabled,
             bid=bids[i],
         ) for i in range(n)
     ]

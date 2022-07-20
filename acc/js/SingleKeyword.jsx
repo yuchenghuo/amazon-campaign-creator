@@ -20,7 +20,7 @@ class SingleKeyword extends React.Component {
       open: false,
       biddingStrategy: null,
       adjustments: null,
-      premiumBidAdjustment: false,
+      enabled: false,
       acosTarget: null,
       asin: null,
       dailyBudget: null,
@@ -51,6 +51,22 @@ class SingleKeyword extends React.Component {
   };
 
   handleSubmit() {
+    this.setState({
+      open: false,
+      biddingStrategy: null,
+      adjustments: null,
+      enabled: false,
+      acosTarget: null,
+      asin: null,
+      dailyBudget: null,
+      campaignStartDate: null,
+      campaignEndDate: null,
+      keywords: null,
+      defaultBid: null,
+      bidAdjustment: null,
+      initialKeywordBid: null,
+      maxBid: null,
+    });
     this.handleClose();
     this.props.onSubmit(this.state);
   }
@@ -151,11 +167,11 @@ class SingleKeyword extends React.Component {
               <div style={{display: "flex", flexDirection: "row", marginBottom: 0}}>
                 <TextField
                   margin="dense"
-                  label="Premium Bid Adjustment"
+                  label="Enabled"
                   type="checkbox"
                   variant="outlined"
                   defaultChecked={false}
-                  onChange={(e) => this.setState({premiumBidAdjustment: e.target.checked})}
+                  onChange={(e) => this.setState({enabled: e.target.checked})}
                   style={{ width: 175 }}
                   inputProps={{ style: { margin: 70, minHeight: 53, maxHeight: 53 } }}
                   InputLabelProps={{ sx: { fontFamily: 'Anek Latin, sans-serif', fontSize: 18 }, shrink: true }}

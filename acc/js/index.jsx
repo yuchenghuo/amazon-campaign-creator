@@ -41,11 +41,12 @@ class Index extends React.Component {
         body: JSON.stringify({
           profile_id: this.state.profileSelected.profileId,
           asin: state.asin,
+          sku: state.sku,
+          enabled: state.enabled,
           acostarget: state.acosTarget,
           campaign_start_date: state.campaignStartDate,
           campaign_end_date: state.campaignEndDate,
           daily_budget: state.dailyBudget,
-          premium_bid_adjustment: state.premiumBidAdjustment,
           default_bid: state.defaultBid,
           max_bid: state.maxBid,
           bid_adjustment: state.bidAdjustment,
@@ -59,9 +60,18 @@ class Index extends React.Component {
             }]
           }
         })}
-      ).then((res) => res.json())
+      )
+        .then((res) => res.json())
         .then((res) => {
-          alert(res.status);
+          alert(
+            `Success: ${res.success}\n`
+            + `Campaigns Created: ${res.campaign_created}\n`
+            + `Ad Groups Created: ${res.ad_group_created}\n`
+            + `Product Ads Created: ${res.product_ad_created}\n`
+            + `Keywords Created: ${res.keyword_created}\n`
+            + `Bid Recommendations Received: ${res.bid_recommendations_received}\n`
+          );
+          console.log(res);
         })
     }
   }

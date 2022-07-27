@@ -8,9 +8,9 @@ def create_campaign_data(campaign_name,
                          targeting_type,
                          daily_budget,
                          start_date,
+                         state,
                          premium_bid_adjustment=False,
                          campaign_type='sponsoredProducts',
-                         state='enabled',
                          end_date=None,
                          bidding=None):
     campaign_data = {
@@ -99,8 +99,38 @@ def create_ad_groups(profile_id, ad_group_data):
         },
         data=json.dumps(json_data),
     )
+    if r.status_code == 207 and all(ad_group['code'] == 'SUCCESS' for ad_group in r.json()):
+        return [ad_group['adGroupId'] for ad_group in r.json()]
+    return []
 
-    return [ad_group['adGroupId'] for ad_group in r.json()]
+
+def create_product_ad_data(campaign_id,
+                           ad_group_id,
+                           asin, sku,
+                           state='enabled'):
+    return {
+        'campaignId': campaign_id,
+        'adGroupId': ad_group_id,
+        'sku': sku,
+        # 'asin': asin,
+        'state': state,
+    }
+
+
+def create_product_ads(profile_id, product_ad_data):
+    r = requests.post(
+        'https://advertising-api.amazon.com/v2/sp/productAds',
+        headers={
+            'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+            'Amazon-Advertising-API-Scope': profile_id,
+            'Authorization': 'Bearer ' + flask.session['access_token'],
+            'Content-Type': 'application/json',
+        },
+        data=json.dumps(product_ad_data),
+    )
+    if r.status_code == 207 and all(product_ad['code'] == 'SUCCESS' for product_ad in r.json()):
+        return [product_ad['adId'] for product_ad in r.json()]
+    return []
 
 
 def create_keyword_data(campaign_id,
@@ -143,7 +173,10 @@ def create_keywords(profile_id, keyword_data):
         },
         data=json.dumps(json_data),
     )
-    return [keyword['keywordId'] for keyword in r.json()]
+
+    if r.status_code == 207 and all(keyword['code'] == 'SUCCESS' for keyword in r.json()):
+        return [keyword['keywordId'] for keyword in r.json()]
+    return []
 
 
 def get_bid_recommendations(profile_id, adgroup_id, keywords, match_type):
@@ -169,5 +202,7 @@ def get_bid_recommendations(profile_id, adgroup_id, keywords, match_type):
         },
         data=json.dumps(json_data),
     )
-    return r.json()['recommendations']
+    if r.status_code == 207:
+        return r.json()['recommendations']
+    return []
 

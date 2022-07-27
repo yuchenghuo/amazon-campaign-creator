@@ -23,6 +23,7 @@ class SingleKeyword extends React.Component {
       enabled: false,
       acosTarget: null,
       asin: null,
+      sku: null,
       dailyBudget: null,
       campaignStartDate: null,
       campaignEndDate: null,
@@ -58,6 +59,7 @@ class SingleKeyword extends React.Component {
       enabled: false,
       acosTarget: null,
       asin: null,
+      sku: null,
       dailyBudget: null,
       campaignStartDate: null,
       campaignEndDate: null,
@@ -103,6 +105,17 @@ class SingleKeyword extends React.Component {
               </p>
             </DialogContentText>
             <ThemeProvider theme={theme}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label="SKU"
+                type="text"
+                fullWidth
+                onChange={(e) => this.setState({sku: e.target.value})}
+                variant="outlined"
+                inputProps={{ style: { fontFamily: 'Anek Latin, sans-serif', fontSize: 18 } }}
+                InputLabelProps={{ sx: { fontFamily: 'Anek Latin, sans-serif', fontSize: 18 } }}
+              />
               <TextField
                 autoFocus
                 margin="dense"

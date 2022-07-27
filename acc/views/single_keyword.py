@@ -5,7 +5,8 @@ import acc
 from acc.views.auth import is_logged_in, get_access_token
 from acc.views.sponsored_products import create_campaign_data, \
     create_ad_group_data, create_keyword_data, create_campaigns, \
-    create_ad_groups, create_keywords, get_bid_recommendations
+    create_ad_groups, create_keywords, get_bid_recommendations, \
+    create_product_ad_data, create_product_ads
 
 
 @acc.app.route('/single_keyword_campaign/', methods=['POST'])
@@ -13,9 +14,20 @@ def single_keyword_campaign():
     """Display / route."""
     if not is_logged_in():
         return {'error': 'Not logged in'}
+
+    status = {
+        'success': False,
+        'campaign_created': False,
+        'ad_group_created': False,
+        'product_ad_created': False,
+        'bid_recommendations_received': False,
+        'keyword_created': False,
+    }
+
     json_data = flask.request.get_json()
     profile_id = str(json_data.get('profile_id'))
     asin = json_data.get('asin')
+    sku = json_data.get('sku')
     daily_budget = json_data.get('daily_budget')
     campaign_start_date = json_data.get('campaign_start_date').replace('-', '')
     campaign_end_date = json_data.get('campaign_end_date')
@@ -39,6 +51,7 @@ def single_keyword_campaign():
     if bidding['strategy'] is None:
         bidding = None
     campaign_name = f"{asin} - SPKW_SKW - P{predicate_text} - T{acostarget}"
+    enabled = 'enabled' if enabled else 'paused'
 
     n = len(keywords)
     campaign_data = [
@@ -54,7 +67,8 @@ def single_keyword_campaign():
     ]
     campaigns = create_campaigns(profile_id, campaign_data)
     if not campaigns:
-        return {'status': 'Could not create campaigns'}
+        return status
+    status['campaign_created'] = True
 
     ad_group_data = [
         create_ad_group_data(
@@ -66,9 +80,28 @@ def single_keyword_campaign():
     ]
     ad_groups = create_ad_groups(profile_id, ad_group_data)
     if not ad_groups:
-        return {'status': 'Could not create ad groups'}
+        return status
+    status['ad_group_created'] = True
+
+    product_ads_data = [
+        create_product_ad_data(
+            campaigns[i],
+            ad_groups[i],
+            asin,
+            sku,
+            enabled,
+        ) for i in range(n)
+    ]
+    product_ads = create_product_ads(profile_id, product_ads_data)
+    if not product_ads:
+        return status
+    status['product_ad_created'] = True
 
     recommendations = get_bid_recommendations(profile_id, ad_groups[0], keywords, 'exact')
+    if not recommendations:
+        return status
+    status['bid_recommendations_received'] = True
+
     bids = []
     for recommendation in recommendations:
         if recommendation['code'] != 'SUCCESS':
@@ -99,8 +132,10 @@ def single_keyword_campaign():
     ]
     keywords = create_keywords(profile_id, keyword_data)
     if not keywords:
-        return {'status': 'Could not create keywords'}
+        return status
+    status['keyword_created'] = True
 
     if len(campaigns) == n and len(ad_groups) == n and len(keywords) == n:
-        return {'status': 'Successfully created campaigns!'}
-    return {'success': 'Error creating campaigns'}
+        status['success'] = True
+        return status
+    return status

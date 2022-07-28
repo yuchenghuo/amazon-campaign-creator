@@ -19,9 +19,9 @@ class Index extends React.Component {
     fetch('/login_status/')
       .then(res => res.json())
       .then(res => {
-      this.setState({
-        isLoggedIn: res.logged_in === 'true'
-      })
+        this.setState({
+          isLoggedIn: res.logged_in === 'true'
+        })
     });
   }
 

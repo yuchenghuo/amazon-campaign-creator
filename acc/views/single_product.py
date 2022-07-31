@@ -4,13 +4,13 @@ import json
 import acc
 from acc.views.auth import is_logged_in, get_access_token
 from acc.views.sponsored_products import create_campaign_data, \
-    create_ad_group_data, create_keyword_data, create_campaigns, \
-    create_ad_groups, create_keywords, get_bid_recommendations, \
+    create_ad_group_data, create_product_target_data, create_campaigns, \
+    create_ad_groups, create_product_targets, get_target_recommendations, \
     create_product_ad_data, create_product_ads
 
 
-@acc.app.route('/single_keyword_campaign/', methods=['POST'])
-def single_keyword_campaign():
+@acc.app.route('/single_product_campaign/', methods=['POST'])
+def single_product_campaign():
     """Display / route."""
     if not is_logged_in():
         return {'error': 'Not logged in'}
@@ -22,7 +22,7 @@ def single_keyword_campaign():
         'ad_group_created': False,
         'product_ad_created': False,
         'bid_recommendations_received': False,
-        'keyword_created': False,
+        'product_targets_created': False,
     }
 
     json_data = flask.request.get_json()
@@ -36,7 +36,7 @@ def single_keyword_campaign():
         campaign_end_date = campaign_end_date.replace('-', '')
     enabled = json_data.get('enabled')
     bidding = json_data.get('bidding')
-    keywords = json_data.get('keywords').split(',')
+    asin_targets = json_data.get('asin_targets').split(',')
     acostarget = json_data.get('acostarget')
     predicate = bidding['adjustments'][0]['predicate']
     default_bid = float(json_data.get('default_bid'))
@@ -51,13 +51,13 @@ def single_keyword_campaign():
         predicate_text = '_PP'
     if bidding['strategy'] is None:
         bidding = None
-    campaign_name = f"{asin} - SPKW_SKW - P{predicate_text} - T{acostarget}"
+    campaign_name = f"{asin} - SPPT_SPT - P{predicate_text} - T{acostarget}"
     enabled = 'enabled' if enabled else 'paused'
 
-    n = len(keywords)
+    n = len(asin_targets)
     campaign_data = [
         create_campaign_data(
-            campaign_name=f'{campaign_name} - {keywords[i]}',
+            campaign_name=f'{campaign_name} - {asin_targets[i]}',
             targeting_type='manual',
             daily_budget=daily_budget,
             state=enabled,
@@ -74,7 +74,7 @@ def single_keyword_campaign():
     ad_group_data = [
         create_ad_group_data(
             campaign_id=campaigns[i],
-            name=f'{campaign_name} {i + 1}/{n} ({keywords[i]})',
+            name=f'{campaign_name} {i + 1}/{n} ({asin_targets[i]})',
             default_bid=default_bid,
             state=enabled,
         ) for i in range(n)
@@ -98,7 +98,7 @@ def single_keyword_campaign():
         return status
     status['product_ad_created'] = True
 
-    recommendations = get_bid_recommendations(profile_id, ad_groups[0], keywords, 'exact')
+    recommendations = get_target_recommendations(profile_id, ad_groups[0], asin_targets)
     if not recommendations:
         return status
     status['bid_recommendations_received'] = True
@@ -121,22 +121,21 @@ def single_keyword_campaign():
             range_end = suggested_bid['rangeEnd'] * (1 + bid_adjustment)
             bids.append(range_end if range_end < max_bid else default_bid)
 
-    keyword_data = [
-        create_keyword_data(
+    targets_data = [
+        create_product_target_data(
             campaign_id=campaigns[i],
             ad_group_id=ad_groups[i],
-            keyword_text=keywords[i],
-            match_type='exact',
+            asin_target=asin_targets[i],
             state=enabled,
             bid=bids[i],
         ) for i in range(n)
     ]
-    keywords = create_keywords(profile_id, keyword_data)
-    if not keywords:
+    targets = create_product_targets(profile_id, targets_data)
+    if not targets:
         return status
     status['keyword_created'] = True
 
-    if len(campaigns) == n and len(ad_groups) == n and len(keywords) == n:
+    if len(campaigns) == n and len(ad_groups) == n and len(targets) == n:
         status['success'] = True
         return status
     return status

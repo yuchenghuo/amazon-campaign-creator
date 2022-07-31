@@ -206,3 +206,65 @@ def get_bid_recommendations(profile_id, adgroup_id, keywords, match_type):
         return r.json()['recommendations']
     return []
 
+
+def get_target_recommendations(profile_id, adgroup_id, asin_targets):
+    json_data = {
+        'adGroupId': adgroup_id,
+        'expressions': [],
+    }
+    for asin_target in asin_targets:
+        json_data['expressions'].append(
+            [{
+                'value': asin_target,
+                'type': 'asinSameAs',
+            }]
+        )
+
+    r = requests.post(
+        'https://advertising-api.amazon.com/v2/sp/targets/bidRecommendations',
+        headers={
+            'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+            'Amazon-Advertising-API-Scope': profile_id,
+            'Authorization': 'Bearer ' + flask.session['access_token'],
+            'Content-Type': 'application/json',
+        },
+        data=json.dumps(json_data),
+    )
+    if r.status_code == 200:
+        return r.json()['recommendations']
+    return []
+
+
+def create_product_target_data(campaign_id,
+                               ad_group_id,
+                               asin_target,
+                               state, bid):
+    return {
+        'campaignId': campaign_id,
+        'adGroupId': ad_group_id,
+        'state': state,
+        'expression': [
+            {
+                'value': asin_target,
+                'type': 'asinSameAs',
+            },
+        ],
+        'expressionType': 'manual',
+        'bid': bid,
+    }
+
+
+def create_product_targets(profile_id, product_target_data):
+    r = requests.post(
+        'https://advertising-api.amazon.com/v2/sp/targets',
+        headers={
+            'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+            'Amazon-Advertising-API-Scope': profile_id,
+            'Authorization': 'Bearer ' + flask.session['access_token'],
+            'Content-Type': 'application/json',
+        },
+        data=json.dumps(product_target_data),
+    )
+    if r.status_code == 207 and all(product_target['code'] == 'SUCCESS' for product_target in r.json()):
+        return [product_target['targetId'] for product_target in r.json()]
+    return []

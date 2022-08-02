@@ -49,6 +49,8 @@ def single_keyword_campaign():
         predicate_text = '_TOS'
     elif predicate == 'placementProductPage':
         predicate_text = '_PP'
+    else:
+        bidding['adjustments'] = []
     if bidding['strategy'] is None:
         bidding = None
     campaign_name = f"{asin} - SPKW_SKW - P{predicate_text} - T{acostarget}"

@@ -59,10 +59,15 @@ def create_campaigns(profile_id, campaign_data):
         },
         data=json.dumps(json_data),
     )
-    if r.status_code == 207 and all(campaign['code'] == 'SUCCESS' for campaign in r.json()):
-        return [campaign['campaignId'] for campaign in r.json()]
 
-    return []
+    res = []
+    if r.status_code == 207:
+        for campaign in r.json():
+            if campaign['code'] == 'SUCCESS':
+                res.append(campaign['campaignId'])
+            else:
+                res.append(0)
+    return res
 
 
 def create_ad_group_data(campaign_id,
@@ -99,9 +104,15 @@ def create_ad_groups(profile_id, ad_group_data):
         },
         data=json.dumps(json_data),
     )
-    if r.status_code == 207 and all(ad_group['code'] == 'SUCCESS' for ad_group in r.json()):
-        return [ad_group['adGroupId'] for ad_group in r.json()]
-    return []
+
+    res = []
+    if r.status_code == 207:
+        for ad_group in r.json():
+            if ad_group['code'] == 'SUCCESS':
+                res.append(ad_group['adGroupId'])
+            else:
+                res.append(0)
+    return res
 
 
 def create_product_ad_data(campaign_id,
@@ -128,9 +139,15 @@ def create_product_ads(profile_id, product_ad_data):
         },
         data=json.dumps(product_ad_data),
     )
-    if r.status_code == 207 and all(product_ad['code'] == 'SUCCESS' for product_ad in r.json()):
-        return [product_ad['adId'] for product_ad in r.json()]
-    return []
+
+    res = []
+    if r.status_code == 207:
+        for product_ad in r.json():
+            if product_ad['code'] == 'SUCCESS':
+                res.append(product_ad['adId'])
+            else:
+                res.append(0)
+    return res
 
 
 def create_keyword_data(campaign_id,
@@ -174,9 +191,14 @@ def create_keywords(profile_id, keyword_data):
         data=json.dumps(json_data),
     )
 
-    if r.status_code == 207 and all(keyword['code'] == 'SUCCESS' for keyword in r.json()):
-        return [keyword['keywordId'] for keyword in r.json()]
-    return []
+    res = []
+    if r.status_code == 207:
+        for keyword in r.json():
+            if keyword['code'] == 'SUCCESS':
+                res.append(keyword['keywordId'])
+            else:
+                res.append(0)
+    return res
 
 
 def get_bid_recommendations(profile_id, adgroup_id, keywords, match_type):
@@ -265,6 +287,12 @@ def create_product_targets(profile_id, product_target_data):
         },
         data=json.dumps(product_target_data),
     )
-    if r.status_code == 207 and all(product_target['code'] == 'SUCCESS' for product_target in r.json()):
-        return [product_target['targetId'] for product_target in r.json()]
-    return []
+
+    res = []
+    if r.status_code == 207:
+        for product_target in r.json():
+            if product_target['code'] == 'SUCCESS':
+                res.append(product_target['targetId'])
+            else:
+                res.append(0)
+    return res

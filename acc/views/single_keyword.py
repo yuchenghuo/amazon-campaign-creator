@@ -23,6 +23,7 @@ def single_keyword_campaign():
         'product_ad_created': False,
         'bid_recommendations_received': False,
         'keyword_created': False,
+        'message': '',
     }
 
     json_data = flask.request.get_json()
@@ -140,5 +141,11 @@ def single_keyword_campaign():
 
     if len(campaigns) == n and len(ad_groups) == n and len(keywords) == n:
         status['success'] = True
+        status['message'] = 'All campaigns are successfully created!'
         return status
+
+    for i, campaign in enumerate(campaigns):
+        if campaign == 0:
+            status['message'] += f'\nCampaign with keyword "{keywords[i]}" ' \
+                                 f'at position {i} is not created.'
     return status

@@ -72,6 +72,7 @@ class Index extends React.Component {
             + `Product Ads Created: ${res.product_ad_created}\n`
             + `Keywords Created: ${res.keyword_created}\n`
             + `Bid Recommendations Received: ${res.bid_recommendations_received}\n`
+            + `Message: ${res.message}\n`
           );
           console.log(res);
         })
@@ -117,6 +118,7 @@ class Index extends React.Component {
             + `Product Ads Created: ${res.product_ad_created}\n`
             + `Product Targets Created: ${res.product_targets_created}\n`
             + `Bid Recommendations Received: ${res.bid_recommendations_received}\n`
+            + `Message: ${res.message}\n`
           );
           console.log(res);
         })

@@ -23,6 +23,7 @@ def single_product_campaign():
         'product_ad_created': False,
         'bid_recommendations_received': False,
         'product_targets_created': False,
+        'message': '',
     }
 
     json_data = flask.request.get_json()
@@ -135,9 +136,16 @@ def single_product_campaign():
     targets = create_product_targets(profile_id, targets_data)
     if not targets:
         return status
-    status['keyword_created'] = True
+    status['product_targets_created'] = True
 
-    if len(campaigns) == n and len(ad_groups) == n and len(targets) == n:
+    if 0 not in campaigns and 0 not in ad_groups and 0 not in targets == n:
         status['success'] = True
+        status['message'] = 'All campaigns are successfully created!'
         return status
+
+    for i, campaign in enumerate(campaigns):
+        if campaign == 0:
+            status['message'] += f'\nCampaign with product target ' \
+                                 f'"{asin_targets[i]}" at position {i} ' \
+                                 f'is not created.'
     return status

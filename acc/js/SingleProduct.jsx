@@ -300,7 +300,7 @@ class SingleProduct extends React.Component {
                     Suggested Lowest Bid
                   </Typography>
                 </MenuItem>
-                <MenuItem value={"upper"}>
+                <MenuItem value={"higher"}>
                   <Typography style={{fontFamily: 'Anek Latin, sans-serif'}}>
                     Suggested Highest Bid
                   </Typography>

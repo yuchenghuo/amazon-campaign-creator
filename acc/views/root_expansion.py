@@ -8,13 +8,13 @@ from acc.views.sponsored_products import create_campaign_data, \
     create_product_ad_data, create_product_ads
 
 
-def getMatchType(i):
+def get_match_type(i, is_name):
     if i % 3 == 0:
-        return 'DiscBroad'
+        return 'DiscBroad' if is_name else 'broad'
     elif i % 3 == 1:
-        return 'DiscPhrase'
+        return 'DiscPhrase' if is_name else 'phrase'
     else:
-        return 'DiscExact'
+        return 'DiscExact' if is_name else 'exact'
 
 
 @acc.app.route('/root_expansion_campaign/', methods=['POST'])
@@ -85,7 +85,8 @@ def root_expansion_campaign():
     ad_group_data = [
         create_ad_group_data(
             campaign_id=campaigns[i // 3],
-            name=f"{asin} - SPKW_SKW - RootExpansion_{getMatchType(i)} - "
+            name=f"{asin} - SPKW_SKW - RootExpansion_"
+                 f"{get_match_type(i, True)} - "
                  f"T{acostarget} - {keywords[i // 3]}",
             default_bid=default_bid,
             state=enabled,
@@ -136,17 +137,17 @@ def root_expansion_campaign():
                     bids.append(default_bid)
                 elif initial_keyword_bid == 'suggested':
                     suggested = suggested_bid['suggested'] * (
-                                1 + bid_adjustment)
+                            1 + bid_adjustment)
                     bids.append(
                         suggested if suggested < max_bid else default_bid)
                 elif initial_keyword_bid == 'lower':
                     range_start = suggested_bid['rangeStart'] * (
-                                1 + bid_adjustment)
+                            1 + bid_adjustment)
                     bids.append(
                         range_start if range_start < max_bid else default_bid)
                 elif initial_keyword_bid == 'higher':
                     range_end = suggested_bid['rangeEnd'] * (
-                                1 + bid_adjustment)
+                            1 + bid_adjustment)
                     bids.append(
                         range_end if range_end < max_bid else default_bid)
 
@@ -154,8 +155,8 @@ def root_expansion_campaign():
         create_keyword_data(
             campaign_id=campaigns[i // 3],
             ad_group_id=ad_groups[i],
-            keyword_text=keywords[i],
-            match_type='exact',
+            keyword_text=keywords[i // 3],
+            match_type=get_match_type(i, False),
             state=enabled,
             bid=bids[i],
         ) for i in range(3 * n)
@@ -165,7 +166,8 @@ def root_expansion_campaign():
         return status
     status['keyword_created'] = True
 
-    if len(campaigns) == n and len(ad_groups) == n and len(keywords_ids) == n:
+    if len(campaigns) == n and len(ad_groups) == 3 * n and len(
+            keywords_ids) == 3 * n:
         status['success'] = True
         status['message'] = 'All campaigns are successfully created!'
         return status

@@ -174,11 +174,12 @@ def create_keywords(profile_id, keyword_data, negative=False):
                 'keywordText': keyword['keyword_text'],
                 'matchType': keyword['match_type'],
                 'state': keyword['state'],
-                'bid': keyword['bid'],
                 'campaignId': keyword['campaign_id'],
                 'adGroupId': keyword['ad_group_id'],
             }
         )
+        if not negative:
+            json_data[-1]['bid'] = keyword['bid']
 
     url = 'https://advertising-api.amazon.com/v2/sp/keywords' if not negative \
         else 'https://advertising-api.amazon.com/v2/sp/negativeKeywords'

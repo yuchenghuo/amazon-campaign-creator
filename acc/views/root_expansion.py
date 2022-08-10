@@ -191,8 +191,10 @@ def root_expansion_campaign():
         return status
     status['keyword_created'] = True
 
-    if len(campaigns) == n and len(ad_groups) == 3 * n and len(
-            keywords_ids) == 3 * n and len(negative_keywords_ids) == 2 * n:
+    if all([campaign != 0 for campaign in campaigns]) and \
+            all([ad_group != 0 for ad_group in ad_groups]) and \
+            all([keyword != 0 for keyword in keywords_ids]) and \
+            all([nkw != 0 for nkw in negative_keywords_ids]):
         status['success'] = True
         status['message'] = 'All campaigns are successfully created!'
         return status

@@ -3,6 +3,7 @@ import MenuBar from './MenuBar';
 import ProfileSelect from "./ProfileSelect";
 import SingleKeyword from "./SingleKeyword";
 import SingleProduct from "./SingleProduct";
+import RootExpansion from "./RootExpansion";
 
 class Index extends React.Component {
   constructor(props) {
@@ -14,6 +15,7 @@ class Index extends React.Component {
     this.logOut = this.logOut.bind(this);
     this.singleKeywordSubmit = this.singleKeywordSubmit.bind(this);
     this.singleProductSubmit = this.singleProductSubmit.bind(this);
+    this.rootExpansionSubmit = this.rootExpansionSubmit.bind(this);
     this.handleProfileChange = this.handleProfileChange.bind(this);
   }
 
@@ -125,6 +127,52 @@ class Index extends React.Component {
     }
   }
 
+  rootExpansionSubmit(state) {
+    if (this.state.isLoggedIn && this.state.profileSelected !== null) {
+      fetch('/root_expansion_campaign/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          profile_id: this.state.profileSelected.profileId,
+          asin: state.asin,
+          sku: state.sku,
+          enabled: state.enabled,
+          acostarget: state.acosTarget,
+          campaign_start_date: state.campaignStartDate,
+          campaign_end_date: state.campaignEndDate,
+          daily_budget: state.dailyBudget,
+          default_bid: state.defaultBid,
+          max_bid: state.maxBid,
+          bid_adjustment: state.bidAdjustment,
+          keywords: state.keywords,
+          initial_keyword_bid: state.initialKeywordBid,
+          bidding: {
+            strategy: state.biddingStrategy,
+            adjustments: [{
+              predicate: state.adjustments,
+              percentage: state.percentage,
+            }]
+          }
+        })}
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          alert(
+            `Success: ${res.success}\n`
+            + `Campaigns Created: ${res.campaign_created}\n`
+            + `Ad Groups Created: ${res.ad_group_created}\n`
+            + `Product Ads Created: ${res.product_ad_created}\n`
+            + `Keywords Created: ${res.keyword_created}\n`
+            + `Bid Recommendations Received: ${res.bid_recommendations_received}\n`
+            + `Message: ${res.message}\n`
+          );
+          console.log(res);
+        })
+    }
+  }
+
   handleProfileChange(profile) {
     this.setState({
       profileSelected: profile
@@ -141,6 +189,7 @@ class Index extends React.Component {
           <p style={{ color: "white", fontFamily: 'Anek Latin, sans-serif', fontSize: 25, fontWeight: "bold", marginBottom: 5 }}> Please Choose A Campaign Theme </p>
           <SingleKeyword onSubmit={this.singleKeywordSubmit}/>
           <SingleProduct onSubmit={this.singleProductSubmit}/>
+          <RootExpansion onSubmit={this.rootExpansionSubmit}/>
         </div>
       </div>
     );

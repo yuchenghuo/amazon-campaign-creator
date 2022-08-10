@@ -62,7 +62,7 @@ def root_expansion_campaign():
         bidding['adjustments'] = []
     if bidding['strategy'] is None:
         bidding = None
-    campaign_name = f"{asin} - SPKW_SKW - RootExpansion - T{acostarget}"
+    campaign_name = f"{asin} - SPKW - RootExpansion - T{acostarget}"
     enabled = 'enabled' if enabled else 'paused'
 
     n = len(keywords)
@@ -85,7 +85,7 @@ def root_expansion_campaign():
     ad_group_data = [
         create_ad_group_data(
             campaign_id=campaigns[i // 3],
-            name=f"{asin} - SPKW_SKW - RootExpansion_"
+            name=f"{asin} - SPKW - RootExpansion_"
                  f"{get_match_type(i, True)} - "
                  f"T{acostarget} - {keywords[i // 3]}",
             default_bid=default_bid,
@@ -162,12 +162,37 @@ def root_expansion_campaign():
         ) for i in range(3 * n)
     ]
     keywords_ids = create_keywords(profile_id, keyword_data)
-    if not keywords_ids:
+
+    keyword_data = []
+    for i in range(3 * n):
+        if i % 3 == 2:
+            continue
+        elif i % 3 == 0:
+            keyword_data.append(create_keyword_data(
+                campaign_id=campaigns[i // 3],
+                ad_group_id=ad_groups[i],
+                keyword_text=keywords[i // 3],
+                match_type="negativePhrase",
+                state=enabled,
+                bid=bids[i],
+            ))
+        elif i % 3 == 1:
+            keyword_data.append(create_keyword_data(
+                campaign_id=campaigns[i // 3],
+                ad_group_id=ad_groups[i],
+                keyword_text=keywords[i // 3],
+                match_type="negativeExact",
+                state=enabled,
+                bid=bids[i],
+            ))
+    negative_keywords_ids = create_keywords(profile_id, keyword_data, True)
+
+    if not keywords_ids or not negative_keywords_ids:
         return status
     status['keyword_created'] = True
 
     if len(campaigns) == n and len(ad_groups) == 3 * n and len(
-            keywords_ids) == 3 * n:
+            keywords_ids) == 3 * n and len(negative_keywords_ids) == 2 * n:
         status['success'] = True
         status['message'] = 'All campaigns are successfully created!'
         return status

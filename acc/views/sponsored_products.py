@@ -166,7 +166,7 @@ def create_keyword_data(campaign_id,
     }
 
 
-def create_keywords(profile_id, keyword_data):
+def create_keywords(profile_id, keyword_data, negative=False):
     json_data = []
     for keyword in keyword_data:
         json_data.append(
@@ -180,8 +180,11 @@ def create_keywords(profile_id, keyword_data):
             }
         )
 
+    url = 'https://advertising-api.amazon.com/v2/sp/keywords' if not negative \
+        else 'https://advertising-api.amazon.com/v2/sp/negativeKeywords'
+
     r = requests.post(
-        'https://advertising-api.amazon.com/v2/sp/keywords',
+        url,
         headers={
             'Amazon-Advertising-API-ClientId': flask.session['client_id'],
             'Amazon-Advertising-API-Scope': profile_id,

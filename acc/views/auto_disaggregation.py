@@ -6,7 +6,7 @@ from acc.views.sponsored_products import create_campaign_data, \
     create_ad_group_data, create_product_target_data, create_campaigns, \
     create_ad_groups, create_product_targets, create_product_ad_data, \
     create_product_ads, \
-    get_target_recommendations_by_ad_group_id, get_product_targets, \
+    get_auto_target_recommendations, get_product_targets, \
     update_auto_product_targets, create_keywords, create_keyword_data
 
 
@@ -163,14 +163,17 @@ def auto_disaggregation_campaign():
         return status
     status['negative_targets_created'] = True
 
-    recommendations = get_target_recommendations_by_ad_group_id(
-        profile_id, ad_groups)
+    recommendations = get_auto_target_recommendations(profile_id, ad_groups)
     if not recommendations:
         return status
     status['bid_recommendations_received'] = True
 
     bids = []
     for recommendation in recommendations:
+        recommendation = recommendation[0]
+        if recommendation['code'] != 'SUCCESS':
+            bids.append(default_bid)
+            continue
         suggested_bid = recommendation['suggestedBid']
         if initial_keyword_bid == 'default':
             bids.append(default_bid)

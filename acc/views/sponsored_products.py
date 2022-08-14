@@ -261,6 +261,36 @@ def get_target_recommendations(profile_id, adgroup_id, asin_targets):
     return []
 
 
+def get_auto_target_recommendations(profile_id, adgroup_ids):
+    predicates = ["queryHighRelMatches", "queryBroadRelMatches",
+                  "querySubstituteRelated", "asinAccessoryRelated"]
+    recommendations = []
+    for i in range(4):
+        json_data = {
+            'adGroupId': adgroup_ids[i],
+            'expressions': [
+                [
+                    {
+                        'type': predicates[i],
+                    }
+                ]
+            ],
+        }
+        r = requests.post(
+            'https://advertising-api.amazon.com/v2/sp/targets/bidRecommendations',
+            headers={
+                'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+                'Amazon-Advertising-API-Scope': profile_id,
+                'Authorization': 'Bearer ' + flask.session['access_token'],
+                'Content-Type': 'application/json',
+            },
+            data=json.dumps(json_data),
+        )
+        if r.status_code == 200:
+            recommendations.append(r.json()['recommendations'])
+    return recommendations
+
+
 def get_target_recommendations_by_ad_group_id(profile_id, ad_group_ids):
     urls = [
         f'https://advertising-api.amazon.com/v2/sp/adGroups/'

@@ -261,11 +261,84 @@ def get_target_recommendations(profile_id, adgroup_id, asin_targets):
     return []
 
 
+def get_target_recommendations_by_ad_group_id(profile_id, ad_group_ids):
+    urls = [
+        f'https://advertising-api.amazon.com/v2/sp/adGroups/'
+        f'{ad_group_id}/bidRecommendations' for ad_group_id in ad_group_ids
+    ]
+
+    recommendations = []
+    for url in urls:
+        r = requests.get(
+            url,
+            headers={
+                'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+                'Amazon-Advertising-API-Scope': profile_id,
+                'Authorization': 'Bearer ' + flask.session['access_token'],
+                'Content-Type': 'application/json',
+            },
+        )
+        if r.status_code == 200:
+            recommendations.append(r.json())
+    return recommendations
+
+
+def get_product_targets(profile_id, campaign_ids):
+    target_ids = []
+    for campaign_id in campaign_ids:
+        target_ids_curr = []
+        r = requests.get(
+            'https://advertising-api.amazon.com/v2/sp/targets',
+            params={
+                'campaignIdFilter': campaign_id,
+            },
+            headers={
+                'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+                'Amazon-Advertising-API-Scope': profile_id,
+                'Authorization': 'Bearer ' + flask.session['access_token'],
+                'Content-Type': 'application/json',
+            },
+        )
+        if r.status_code == 200:
+            for target in r.json():
+                target_ids_curr.append(target['targetId'])
+        target_ids.append(target_ids_curr)
+    return target_ids
+
+
+def update_auto_product_targets(profile_id, target_ids, bids):
+    status = True
+    for i, target_id_group in enumerate(target_ids):
+        json_data = []
+        for j, target_id in enumerate(target_id_group):
+            state = 'enabled' if i == j else 'paused'
+            json_data.append(
+                {
+                    'targetId': target_id,
+                    'state': state,
+                    'bid': bids[i],
+                }
+            )
+        r = requests.post(
+            'https://advertising-api.amazon.com/v2/sp/targets',
+            headers={
+                'Amazon-Advertising-API-ClientId': flask.session['client_id'],
+                'Amazon-Advertising-API-Scope': profile_id,
+                'Authorization': 'Bearer ' + flask.session['access_token'],
+                'Content-Type': 'application/json',
+            },
+            data=json.dumps(json_data),
+        )
+        if r.status_code != 207:
+            status = False
+    return status
+
+
 def create_product_target_data(campaign_id,
                                ad_group_id,
                                asin_target,
-                               state, bid):
-    return {
+                               state, bid=None):
+    data = {
         'campaignId': campaign_id,
         'adGroupId': ad_group_id,
         'state': state,
@@ -276,13 +349,17 @@ def create_product_target_data(campaign_id,
             },
         ],
         'expressionType': 'manual',
-        'bid': bid,
     }
+    if bid is not None:
+        data['bid'] = bid
+    return data
 
 
-def create_product_targets(profile_id, product_target_data):
+def create_product_targets(profile_id, product_target_data, negative=False):
+    url = 'https://advertising-api.amazon.com/v2/sp/targets' if not negative \
+        else 'https://advertising-api.amazon.com/v2/sp/negativeTargets'
     r = requests.post(
-        'https://advertising-api.amazon.com/v2/sp/targets',
+        url,
         headers={
             'Amazon-Advertising-API-ClientId': flask.session['client_id'],
             'Amazon-Advertising-API-Scope': profile_id,

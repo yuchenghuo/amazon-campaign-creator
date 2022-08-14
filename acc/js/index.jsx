@@ -4,6 +4,7 @@ import ProfileSelect from "./ProfileSelect";
 import SingleKeyword from "./SingleKeyword";
 import SingleProduct from "./SingleProduct";
 import RootExpansion from "./RootExpansion";
+import AutoDisaggregation from "./AutoDisaggregation";
 
 class Index extends React.Component {
   constructor(props) {
@@ -16,6 +17,7 @@ class Index extends React.Component {
     this.singleKeywordSubmit = this.singleKeywordSubmit.bind(this);
     this.singleProductSubmit = this.singleProductSubmit.bind(this);
     this.rootExpansionSubmit = this.rootExpansionSubmit.bind(this);
+    this.autoDisaggregationSubmit = this.autoDisaggregationSubmit.bind(this);
     this.handleProfileChange = this.handleProfileChange.bind(this);
   }
 
@@ -127,6 +129,54 @@ class Index extends React.Component {
     }
   }
 
+  autoDisaggregationSubmit(state) {
+    if (this.state.isLoggedIn && this.state.profileSelected !== null) {
+      fetch('/auto_disaggregation_campaign/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          profile_id: this.state.profileSelected.profileId,
+          asin: state.asin,
+          sku: state.sku,
+          enabled: state.enabled,
+          acostarget: state.acosTarget,
+          campaign_start_date: state.campaignStartDate,
+          campaign_end_date: state.campaignEndDate,
+          daily_budget: state.dailyBudget,
+          default_bid: state.defaultBid,
+          max_bid: state.maxBid,
+          bid_adjustment: state.bidAdjustment,
+          negative_keywords_exact: state.negativeKeywordsExact,
+          negative_keywords_phrase: state.negativeKeywordsPhrase,
+          negative_asins: state.negativeAsinTargets,
+          initial_keyword_bid: state.initialKeywordBid,
+          bidding: {
+            strategy: state.biddingStrategy,
+            adjustments: [{
+              predicate: state.adjustments,
+              percentage: state.percentage,
+            }]
+          }
+        })}
+      )
+        .then((res) => res.json())
+        .then((res) => {
+          alert(
+            `Success: ${res.success}\n`
+            + `Campaigns Created: ${res.campaign_created}\n`
+            + `Ad Groups Created: ${res.ad_group_created}\n`
+            + `Product Ads Created: ${res.product_ad_created}\n`
+            + `Product Targets Created: ${res.product_targets_created}\n`
+            + `Bid Recommendations Received: ${res.bid_recommendations_received}\n`
+            + `Message: ${res.message}\n`
+          );
+          console.log(res);
+        })
+    }
+  }
+
   rootExpansionSubmit(state) {
     if (this.state.isLoggedIn && this.state.profileSelected !== null) {
       fetch('/root_expansion_campaign/', {
@@ -190,6 +240,7 @@ class Index extends React.Component {
           <SingleKeyword onSubmit={this.singleKeywordSubmit}/>
           <SingleProduct onSubmit={this.singleProductSubmit}/>
           <RootExpansion onSubmit={this.rootExpansionSubmit}/>
+          <AutoDisaggregation onSubmit={this.autoDisaggregationSubmit}/>
         </div>
       </div>
     );

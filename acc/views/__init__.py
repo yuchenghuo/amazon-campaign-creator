@@ -4,3 +4,4 @@ from acc.views.index import index
 from acc.views.single_keyword import single_keyword_campaign
 from acc.views.single_product import single_product_campaign
 from acc.views.root_expansion import root_expansion_campaign
+from acc.views.auto_disaggregation import auto_disaggregation_campaign

@@ -37,7 +37,7 @@ def single_product_campaign():
         campaign_end_date = campaign_end_date.replace('-', '')
     enabled = json_data.get('enabled')
     bidding = json_data.get('bidding')
-    asin_targets = json_data.get('asin_targets').split(',')
+    asin_targets = [x.strip() for x in json_data.get('asin_targets').split(',')]
     acostarget = json_data.get('acostarget')
     predicate = bidding['adjustments'][0]['predicate']
     default_bid = float(json_data.get('default_bid'))

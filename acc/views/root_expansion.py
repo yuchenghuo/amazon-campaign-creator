@@ -45,7 +45,7 @@ def root_expansion_campaign():
         campaign_end_date = campaign_end_date.replace('-', '')
     enabled = json_data.get('enabled')
     bidding = json_data.get('bidding')
-    keywords = json_data.get('keywords').split(',')
+    keywords = [x.strip() for x in json_data.get('keywords').split(',')]
     acostarget = json_data.get('acostarget')
     predicate = bidding['adjustments'][0]['predicate']
     default_bid = float(json_data.get('default_bid'))

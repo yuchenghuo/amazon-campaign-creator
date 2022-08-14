@@ -1,5 +1,4 @@
 import flask
-import json
 
 import acc
 from acc.views.auth import is_logged_in, get_access_token
@@ -101,7 +100,8 @@ def single_keyword_campaign():
         return status
     status['product_ad_created'] = True
 
-    recommendations = get_bid_recommendations(profile_id, ad_groups[0], keywords, 'exact')
+    recommendations = get_bid_recommendations(profile_id, ad_groups[0],
+                                              keywords, 'exact')
     if not recommendations:
         return status
     status['bid_recommendations_received'] = True

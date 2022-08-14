@@ -5,8 +5,6 @@ URLs include:
 /
 """
 import flask
-import json
-import requests
 
 import acc
 from acc.views.auth import valid_secrets
@@ -17,18 +15,3 @@ def index():
     if not valid_secrets():
         return flask.redirect(flask.url_for('login'))
     return flask.render_template("index.html")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,12 +1,11 @@
 import flask
-import json
 
 import acc
 from acc.views.auth import is_logged_in, get_access_token
 from acc.views.sponsored_products import create_campaign_data, \
     create_ad_group_data, create_product_target_data, create_campaigns, \
-    create_ad_groups, create_product_targets, get_target_recommendations, \
-    create_product_ad_data, create_product_ads, \
+    create_ad_groups, create_product_targets, create_product_ad_data, \
+    create_product_ads, \
     get_target_recommendations_by_ad_group_id, get_product_targets, \
     update_auto_product_targets, create_keywords, create_keyword_data
 
@@ -52,10 +51,12 @@ def auto_disaggregation_campaign():
         campaign_end_date = campaign_end_date.replace('-', '')
     negative_keywords_exact = json_data.get('negative_keywords_exact')
     if negative_keywords_exact:
-        negative_keywords_exact = [x.strip() for x in negative_keywords_exact.split(',')]
+        negative_keywords_exact = [x.strip() for x in
+                                   negative_keywords_exact.split(',')]
     negative_keywords_phrase = json_data.get('negative_keywords_phrase')
     if negative_keywords_phrase:
-        negative_keywords_phrase = [x.strip() for x in negative_keywords_phrase.split(',')]
+        negative_keywords_phrase = [x.strip() for x in
+                                    negative_keywords_phrase.split(',')]
     negative_asins = json_data.get('negative_asins')
     if negative_asins:
         negative_asins = [x.strip() for x in negative_asins.split(',')]

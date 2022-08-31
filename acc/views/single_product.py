@@ -139,7 +139,7 @@ def single_product_campaign():
         return status
     status['product_targets_created'] = True
 
-    if 0 not in campaigns and 0 not in ad_groups and 0 not in targets == n:
+    if 0 not in campaigns and 0 not in ad_groups and 0 not in targets:
         status['success'] = True
         status['message'] = 'All campaigns are successfully created!'
         return status

@@ -127,35 +127,39 @@ def auto_disaggregation_campaign():
 
     keyword_data = []
     for i in range(len(negative_keywords_exact)):
-        keyword_data.append(create_keyword_data(
-            campaign_id=campaigns[i],
-            ad_group_id=ad_groups[i],
-            keyword_text=negative_keywords_exact[i],
-            match_type='negativeExact',
-            state=enabled,
-        ))
+        for j in range(len(campaigns)):
+            keyword_data.append(create_keyword_data(
+                campaign_id=campaigns[j],
+                ad_group_id=ad_groups[j],
+                keyword_text=negative_keywords_exact[i],
+                match_type='negativeExact',
+                state=enabled,
+            ))
     for i in range(len(negative_keywords_phrase)):
-        keyword_data.append(create_keyword_data(
-            campaign_id=campaigns[i],
-            ad_group_id=ad_groups[i],
-            keyword_text=negative_keywords_phrase[i],
-            match_type='negativePhrase',
-            state=enabled,
-        ))
+        for j in range(len(campaigns)):
+            keyword_data.append(create_keyword_data(
+                campaign_id=campaigns[j],
+                ad_group_id=ad_groups[j],
+                keyword_text=negative_keywords_phrase[i],
+                match_type='negativePhrase',
+                state=enabled,
+            ))
     negative_keywords = create_keywords(profile_id, keyword_data, True) \
         if keyword_data else []
     if keyword_data and not negative_keywords:
         return status
     status['negative_keyword_created'] = True
 
-    targets_data = [
-        create_product_target_data(
-            campaigns[i],
-            ad_groups[i],
-            negative_asins[i],
-            enabled,
-        ) for i in range(len(negative_asins))
-    ]
+    targets_data = []
+    for i in range(len(negative_asins)):
+        for j in range(len(campaigns)):
+            targets_data.append(create_product_target_data(
+                campaigns[j],
+                ad_groups[j],
+                negative_asins[i],
+                enabled,
+            ))
+
     negative_targets = create_product_targets(profile_id, targets_data, True) \
         if targets_data else []
     if targets_data and not negative_targets:

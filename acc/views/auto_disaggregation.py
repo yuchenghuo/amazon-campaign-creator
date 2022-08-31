@@ -35,7 +35,6 @@ def auto_disaggregation_campaign():
         'product_ad_created': False,
         'negative_keyword_created': False,
         'bid_recommendations_received': False,
-        'product_targets_created': False,
         'negative_targets_created': False,
         'message': '',
     }

@@ -117,7 +117,6 @@ class SingleKeyword extends React.Component {
                 InputLabelProps={{ sx: { fontFamily: 'Anek Latin, sans-serif', fontSize: 18 } }}
               />
               <TextField
-                autoFocus
                 margin="dense"
                 label="ASIN"
                 type="text"
